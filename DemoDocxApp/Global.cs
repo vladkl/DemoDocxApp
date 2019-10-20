@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace CostService
+namespace ConsoleApp
 {
     static class Globals
     {
@@ -18,13 +18,10 @@ namespace CostService
         public const string CRADLE_CDS_HOST = "SCO-SUITZ02";
         public const string CRADLE_HOME = @"C:\Program Files\Cradle\bin\exe\windows";
         public const string CRADLE_API = "CradleAPI.dll";
-        public static string CRADLE_PROJECT_CODE = "TBL1";
+        public static string CRADLE_PROJECT_CODE = "";
         public const string CRADLE_USERNAME = "MANAGER";
         public const string CRADLE_PASSWORD = "MANAGER";
-        public static string[] Args;
-
-
-
+        public static string[] Args = new string[7];
         /// <summary>
         /// Loads CradleAPI.dll so we can run outside of the Cradle installation directory
         /// </summary>
@@ -48,26 +45,9 @@ namespace CostService
         public static void GetArgs()
         {
             Args = Environment.CommandLine.Split('&');
-            CRADLE_PROJECT_CODE = Args[1];
-            //Args = new string[] { "exe","TBL1", "ПД", "БЛ1", "БЛ2" };
-        }
-        public static string[] GetQuerys()
-        {
-            // Проверка фазы проекта
-            switch (Args[2])
-            {
-                case "АФК":
-                    return new string[] { "Требование ТЗ АФК - ALL", "Раздел ТЗ АФК - ALL" };
-                case "ПД":
-                    return new string[] { "Требование ТЗ ПД - ALL", "Раздел ТЗ ПД - ALL" };
-                case "РД":
-                    return new string[] { "Требование ТЗ РД - ALL", "Раздел ТЗ РД - ALL" };
-                case "СМР":
-                    return new string[] { "Требование ТЗ СМР - ALL", "Раздел ТЗ СМР - ALL" };
-                default:
-                    return null;
-            }
 
+            //Args = new string[] { "exe","TBL1", "ПД", "БЛ1", "БЛ2" };
+            CRADLE_PROJECT_CODE = Globals.Args[1];
         }
     }
 }
