@@ -4,6 +4,10 @@ using System.Linq;
 using Xceed.Words.NET;
 using Xceed.Document.NET;
 using Font = Xceed.Document.NET.Font;
+using System.IO;
+using System.Text;
+using Spire.Doc;
+using Table = Xceed.Document.NET.Table;
 
 namespace DemoDocxApp
 {
@@ -29,9 +33,32 @@ namespace DemoDocxApp
 
             }
         }
+        static Stream RtfDocx(string rtf)
+        {
+            byte[] byteArray = Encoding.ASCII.GetBytes(rtf);
+            MemoryStream ms = new MemoryStream(byteArray);
+            MemoryStream msout = new MemoryStream();
+            StreamReader sReader = new StreamReader(ms);
+            var document = new Spire.Doc.Document();
+            //document.LoadFromFile(@"test-doc.rtf");
+            ms.Seek(0, SeekOrigin.Begin);
+            document.LoadRtf(ms, Encoding.UTF8);
+            document.SaveToStream(msout, FileFormat.Docx);
+            msout.Seek(0, SeekOrigin.Begin);
+            //StreamReader reader = new StreamReader(msout);
+            //string text = reader.ReadToEnd();
+            return msout;
+
+
+        }
         static void Main(string[] args)
         {
-            string fileName = @"C:\temp\exempleWord.docx";
+            string path = "test-doc.rtf";
+            string readText = File.ReadAllText(path);
+            var docin = DocX.Load(RtfDocx(readText));
+            var tins = docin.Tables[0];
+
+            string fileName = @"exempleWord.docx";
             var doc = DocX.Create(fileName);
 
             doc.PageLayout.Orientation = Orientation.Landscape;
@@ -104,12 +131,14 @@ namespace DemoDocxApp
 
             //FillRow(t.Rows[3], r3, System.Drawing.Color.LightGreen);
             t.Rows[3].Cells[2].Paragraphs.First().Append("Отчет должен поддерживать фильтрацию (отображение) целевых задач по следующим условиям, с учётом пересчета кол-ва задач, описанного выше:\n1.По профильной системе\n2.По категории\n3.По дате / периоду\n4.По статусу задачи(завершенна, выполняется, планируется)")
-                .InsertTableAfterSelf(t);
+                .InsertTableAfterSelf(tins);
             t.Rows[3].Cells[2].InsertParagraph(doc.InsertParagraph(""));
+            
 
             t.Rows[3].Cells[1].Paragraphs.First().Append("Добавлено");
             t.Rows[3].Cells[1].FillColor = System.Drawing.Color.LightGreen;
             doc.InsertTable(t);
+            //doc.InsertDocument(docin);
             doc.Save();
             Process.Start("WINWORD.EXE", fileName);
 
