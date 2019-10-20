@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace ConsoleApp
+namespace DemoDocxApp
 {
     static class Globals
     {

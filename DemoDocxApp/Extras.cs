@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using Cradle.ProjectSchema;
 using System;
 
-namespace ConsoleApp
+namespace DemoDocxApp
 {
     static class Example_Extras
     {
@@ -84,7 +84,7 @@ namespace ConsoleApp
                 if (!query.Load(ElemType + " - All", CAPI_DEFN_LOC.AUTO))
                     return;
                 proj.SetBaselineMode(CAPI_BASELINE_MODE.SPECIFIED, bl);
-                if (query.Run(1000, out results))
+                if (query.Run(5000, out results))
                 {
                     results.ToDotNetList(ref item_list);
                     results.Dispose();
