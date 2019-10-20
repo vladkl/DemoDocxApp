@@ -109,6 +109,7 @@ namespace DemoDocxApp
                             DocX docin = null;
                             Table tins = null;
                             Picture pins = null;
+                            Paragraph par = null;
                             l_it.Open(false);
                             if (!l_it.GetFrame("TEXT", out frame))
                                 return ;
@@ -145,8 +146,15 @@ namespace DemoDocxApp
                                     IntPtr pnt = frame_pic.Data;
 
                                     Marshal.Copy(pnt, memdocx, 0, memdocx.Length);
-                                    Image img = doc.AddImage(bRtfDocx(memdocx));
-                                    pins = img.CreatePicture(100,100);
+                                    docin = DocX.Load(bRtfDocx(memdocx));
+                                    pic = docin.Pictures[0];
+                                    par = docin.Paragraphs[0];
+                                    
+                                     //   doc.InsertDocument(docin);
+                                    //Image img = doc.AddImage(bRtfDocx(memdocx), "image/png");
+                                    //pic = img.CreatePicture();
+                                    
+
                                 }
 
 
@@ -169,9 +177,10 @@ namespace DemoDocxApp
                             {
                                 if (frame_pic.Size != 0)
                                 {
-                                    //Image img = doc.AddImage(@"Image.PNG");
+                                    //Image img = doc.AddImage(bRtfDocx(memdocx));
                                     //Picture pic = img.CreatePicture();
-                                    gtable.Rows[row].Cells[0].Paragraphs.First().AppendPicture(pins);
+                                    //gtable.Rows[row].Cells[0].Paragraphs.First().AppendPicture(pic);
+                                    gtable.Rows[row].Cells[2].InsertParagraph(par);
                                     gtable.Rows[row].Cells[2].InsertParagraph(docin.InsertParagraph(""));
                                 }
                             }
@@ -216,6 +225,7 @@ namespace DemoDocxApp
    
         }
         static DocX doc;
+        static Picture pic ;
         static void Main(string[] args)
         {
             //string path = "test-doc.rtf";
@@ -258,8 +268,8 @@ namespace DemoDocxApp
             var header = new string[] { "Было", "Статус", "Стало" };
             Table t = doc.AddTable(2, header.Length);
 
-            Image img = doc.AddImage(@"C:\Users\Владимир\source\repos\DemoDocxApp\Image.PNG");
-            Picture pic = img.CreatePicture();
+            //Image img = doc.AddImage(@"C:\Users\Владимир\source\repos\DemoDocxApp\Image.PNG");
+            //Picture pic = img.CreatePicture();
             
             
             //t.AutoFit = AutoFit.Fixed;
