@@ -321,42 +321,10 @@ namespace DemoDocxApp
             t.SetWidthsPercentage(new float[] { 45F,10F, 45F },doc.PageWidth);
             t.Alignment = Alignment.center;
             t.Design = TableDesign.TableGrid;
-            //Fill  by adding text.  
-            //t.Rows[0].Cells[0].Paragraphs.First().Append("Было").Bold();
-            //t.Rows[0].Cells[1].Paragraphs.First().Append("Статус").Bold();
-            //t.Rows[0].Cells[2].Paragraphs.First().Append("Стало").Bold();
-            //t.Rows[0].Cells[0].FillColor = System.Drawing.Color.LightGray;
-            //t.Rows[0].Cells[1].FillColor = System.Drawing.Color.LightGray;
-            //t.Rows[0].Cells[2].FillColor = System.Drawing.Color.LightGray;
-            //foreach (Cell cell in t.Rows[0].Cells)
-            //{ 
-            //    cell.FillColor = System.Drawing.Color.LightGray;
-            //}
-            
+
             FillRow(t.Rows[0], header, System.Drawing.Color.LightGray,true);
 
-            //var r1 = new string[] {
-            //    "Отчет должен строится на основе данных, получаемых из следующих систем и подсистем/программных модулей:\n1.ИСУП = MS Project\n2.IBM Лотус, используемые подсистемы:\na.ПМ Поручения\nb.ПМ Согласование ПГ\nc.ПМ Согласования ТЗ\nd.ПМ Договоры\n",
-            //    "Изменено",
-            //    "Отчет должен строится на основе данных, получаемых из следующих систем и подсистем/программных модулей:\n1.ИСУП = MS Project\n2.IBM Лотус, используемые подсистемы:\na.ПМ Поручения\nb.ПМ Согласование ПГ"
-            //};
-            //t.InsertRow();
-            //FillRow(t.Rows[1], r1, System.Drawing.Color.Yellow);
-            //t.InsertRow();
-            //t.Rows[2].Cells[0].Paragraphs.First().AppendPicture(pic);
-            //t.Rows[2].Cells[1].Paragraphs.First().Append("Удалено");
-            //t.Rows[2].Cells[1].FillColor = System.Drawing.Color.Red;
 
-            //t.InsertRow();
-
-            ////FillRow(t.Rows[3], r3, System.Drawing.Color.LightGreen);
-            //t.Rows[3].Cells[2].Paragraphs.First().Append("Отчет должен поддерживать фильтрацию (отображение) целевых задач по следующим условиям, с учётом пересчета кол-ва задач, описанного выше:\n1.По профильной системе\n2.По категории\n3.По дате / периоду\n4.По статусу задачи(завершенна, выполняется, планируется)")
-            //    .InsertTableAfterSelf(tins);
-            //t.Rows[3].Cells[2].InsertParagraph(doc.InsertParagraph(""));
-
-
-            //t.Rows[3].Cells[1].Paragraphs.First().Append("Добавлено");
-            //t.Rows[3].Cells[1].FillColor = System.Drawing.Color.LightGreen;
             Globals.Load_CradleAPI();
             Globals.GetArgs();
             //&TBL2&ПД&BL0&БЛ1&&Рзд ПД-37&ТЛ-1
