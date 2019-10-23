@@ -17,6 +17,7 @@ using Cradle.Server;
 using List = Cradle.Lists.List;
 using System;
 using System.Runtime.InteropServices;
+using DCSoft.RTF;
 
 namespace DemoDocxApp
 {
@@ -58,7 +59,7 @@ namespace DemoDocxApp
             //string text = reader.ReadToEnd();
             return msout;
         }
-        static Stream bRtfDocx(byte[] byteArray)
+        static Stream BRtfDocx(byte[] byteArray)
         {
             
             MemoryStream ms = new MemoryStream(byteArray);
@@ -72,6 +73,53 @@ namespace DemoDocxApp
             msout.Seek(0, SeekOrigin.Begin);
             //StreamReader reader = new StreamReader(msout);
             //string text = reader.ReadToEnd();
+            return msout;
+        }
+        private static RTFDomElement FindImage(RTFDomElementList list)
+        {
+            RTFDomElement outel = null;
+            var elems = list.OfType<RTFDomImage>();
+            foreach (RTFDomElement el in list)
+            {
+                var type = el.GetType();
+                if (type.Equals(typeof(RTFDomImage)))
+                { return el; }
+                else
+                {
+                    outel = FindImage(el.Elements);
+                    if (outel.GetType().Equals(typeof(RTFDomImage)))
+                    {
+                        return outel;
+                    }
+                }
+            }
+            return outel;
+        }
+        static Stream BRtfImage(byte[] byteArray)
+        {
+
+            MemoryStream msrtf = new MemoryStream(byteArray);
+            MemoryStream msout = null;
+            /*
+            var document = new Spire.Doc.Document();
+            //document.LoadFromFile(@"test-doc.rtf");
+            ms.Seek(0, SeekOrigin.Begin);
+            document.LoadRtf(ms, Encoding.UTF8);
+            document.SaveToStream(msout, FileFormat.Docx2010);
+            msout.Seek(0, SeekOrigin.Begin);
+            //StreamReader reader = new StreamReader(msout);
+            //string text = reader.ReadToEnd();
+            */
+            var rtf = new RTFDomDocument();
+            rtf.Load(msrtf);
+            var elems = rtf.Elements;
+            var el = FindImage(elems);
+            if (el != null)
+            {
+                var image = (RTFDomImage)el;
+                image.DesiredWidth = 200;
+                msout = new MemoryStream(image.Data); 
+            }
             return msout;
         }
         static void OutItems(Table gtable, Item it, ref int row)
@@ -131,7 +179,7 @@ namespace DemoDocxApp
                                     IntPtr pnt = frame_tbl.Data;
 
                                     Marshal.Copy(pnt, memdocx, 0, memdocx.Length);
-                                    docin = DocX.Load(bRtfDocx(memdocx));
+                                    docin = DocX.Load(BRtfDocx(memdocx));
                                     tins = docin.Tables[0];
                                 }
                                 if (!l_it.GetFrame("Рисунок", out frame))
@@ -146,14 +194,15 @@ namespace DemoDocxApp
                                     IntPtr pnt = frame_pic.Data;
 
                                     Marshal.Copy(pnt, memdocx, 0, memdocx.Length);
-                                    docin = DocX.Load(bRtfDocx(memdocx));
-                                    pic = docin.Pictures[0];
-                                    par = docin.Paragraphs[0];
-                                    
-                                     //   doc.InsertDocument(docin);
-                                    //Image img = doc.AddImage(bRtfDocx(memdocx), "image/png");
-                                    //pic = img.CreatePicture();
-                                    
+                                    Stream stream = BRtfImage(memdocx);
+                                    stream.Position = 0;
+                                   
+                                    Image img = doc.AddImage(stream);
+                                    pic = img.CreatePicture();
+                                    double  scale =(double)pic.Width / (double)pic.Height;
+                                    pic.WidthInches = 3;
+                                    pic.HeightInches = pic.WidthInches / scale;
+
 
                                 }
 
@@ -179,9 +228,9 @@ namespace DemoDocxApp
                                 {
                                     //Image img = doc.AddImage(bRtfDocx(memdocx));
                                     //Picture pic = img.CreatePicture();
-                                    //gtable.Rows[row].Cells[0].Paragraphs.First().AppendPicture(pic);
-                                    gtable.Rows[row].Cells[2].InsertParagraph(par);
-                                    gtable.Rows[row].Cells[2].InsertParagraph(docin.InsertParagraph(""));
+                                    gtable.Rows[row].Cells[0].Paragraphs.First().InsertPicture(pic);
+                                    //gtable.Rows[row].Cells[2].InsertParagraph(par);
+                                    //gtable.Rows[row].Cells[2].InsertParagraph(doc.InsertParagraph(""));
                                 }
                             }
                             //sl.InsertRow();
@@ -267,10 +316,6 @@ namespace DemoDocxApp
             //Create Table with 2 rows and 3 columns. 
             var header = new string[] { "Было", "Статус", "Стало" };
             Table t = doc.AddTable(2, header.Length);
-
-            //Image img = doc.AddImage(@"C:\Users\Владимир\source\repos\DemoDocxApp\Image.PNG");
-            //Picture pic = img.CreatePicture();
-            
             
             //t.AutoFit = AutoFit.Fixed;
             t.SetWidthsPercentage(new float[] { 45F,10F, 45F },doc.PageWidth);
