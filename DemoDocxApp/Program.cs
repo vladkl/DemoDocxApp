@@ -213,8 +213,9 @@ namespace DemoDocxApp
 
                             gtable.InsertRow();
                             row++;
-                            gtable.Rows[row].Cells[2].Paragraphs.First().Append(l_it.Identity);
-                            gtable.Rows[row].Cells[2].InsertParagraph().Append(frame_text);
+                            gtable.Rows[row].Cells[1].Paragraphs.First().Append(l_it.Identity);
+                            //gtable.Rows[row].Cells[2].InsertParagraph().Append(frame_text);
+                            gtable.Rows[row].Cells[2].Paragraphs.First().Append(frame_text);
                             if (frame_tbl != null)
                             { if (frame_tbl.Size != 0)
                                 {
@@ -228,8 +229,8 @@ namespace DemoDocxApp
                                 {
                                     //Image img = doc.AddImage(bRtfDocx(memdocx));
                                     //Picture pic = img.CreatePicture();
-                                    gtable.Rows[row].Cells[0].Paragraphs.First().InsertPicture(pic);
-                                    //gtable.Rows[row].Cells[2].InsertParagraph(par);
+                                    //gtable.Rows[row].Cells[0].Paragraphs.First().InsertPicture(pic);
+                                    gtable.Rows[row].Cells[2].InsertParagraph().InsertPicture(pic);
                                     //gtable.Rows[row].Cells[2].InsertParagraph(doc.InsertParagraph(""));
                                 }
                             }
@@ -265,13 +266,30 @@ namespace DemoDocxApp
                     linked_items.Dispose();
                 }
 
-                gtable.Rows[myrow].Cells[2].Paragraphs.First().Append (it.Identity);
-                gtable.Rows[myrow].Cells[2].InsertParagraph().Append(it.Name);
+                gtable.Rows[myrow].Cells[1].Paragraphs.First().Append (it.Identity);
+                gtable.Rows[myrow].Cells[2].Paragraphs.First().Append(it.Name);
                 //sl.InsertRow();
 
                 return;
             }
    
+        }
+        public static void SetColumnWidth(Table t,int[] ColSizePercents,float pagesize)
+        {
+            /* Table t = document.AddTable(rows,columns); */
+            var columnsizes = new float[ColSizePercents.Length];
+
+            t.AutoFit = AutoFit.ColumnWidth;
+            for (int x = 0; x < t.ColumnCount; x++)
+            {
+                //t.SetColumnWidth(x, columnsizes[x]);
+                columnsizes[x] = pagesize * ColSizePercents[x] / 100;
+                for (int y = 0; y < t.RowCount; y++)
+                {
+                    t.Rows[y].Cells[x].Width = columnsizes[x];
+                }
+            }
+
         }
         static DocX doc;
         static Picture pic ;
@@ -298,30 +316,19 @@ namespace DemoDocxApp
                 //Spacing = 1
             };
 
-            /*
-            Table t = document.AddTable(rows,columns);
-            t.AutoFit = AutoFit.ColumnWidth;
-            for (int x = 0; x < t.ColumnCount; x++)
-            {
-            //t.SetColumnWidth(x, columnsizes[x]);
-            for (int y = 0; y < t.RowCount; y++)
-            {
-            t.Rows[y].Cells[x].Width = columnsizes[x];
-            }
-            }
-
-              */
+            
 
 
             //Create Table with 2 rows and 3 columns. 
             var header = new string[] { "Было", "Статус", "Стало" };
             Table t = doc.AddTable(2, header.Length);
-            
+                        t.Alignment = Alignment.center;
+            t.SetWidthsPercentage(new float[] { 45F, 10F, 45F }, doc.PageWidth-40);
+            // t.Design = TableDesign.TableGrid;SetColumnWidth(t, new int[] { 45, 10, 45 }, doc.PageWidth);
             //t.AutoFit = AutoFit.Fixed;
-            t.SetWidthsPercentage(new float[] { 45F,10F, 45F },doc.PageWidth);
-            t.Alignment = Alignment.center;
-            t.Design = TableDesign.TableGrid;
+            //            t.SetWidthsPercentage(new float[] { 45F,10F, 45F },doc.PageWidth);
 
+            SetColumnWidth(t, new int[] { 45, 10, 45 }, doc.PageWidth-40);
             FillRow(t.Rows[0], header, System.Drawing.Color.LightGray,true);
 
 
@@ -353,7 +360,10 @@ namespace DemoDocxApp
                 root.Close();
                 OutItems(t, root, ref row);
             }
+            //SetColumnWidth(t,new int[] { 45, 10, 45 }, doc.PageWidth);
+
             doc.InsertTable(t);
+            //SetColumnWidth(t, new int[] { 45, 10, 45 }, doc.PageWidth);
             //doc.InsertDocument(docin);
             doc.Save();
             Process.Start("WINWORD.EXE", fileName);
